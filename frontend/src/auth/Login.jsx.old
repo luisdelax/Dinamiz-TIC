@@ -1,0 +1,62 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "../api/axios";
+
+const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("/auth/login/", {
+        username,
+        password,
+      });
+
+      // 🔐 AQUÍ VA EL CÓDIGO
+      localStorage.setItem("access", response.data.access);
+      localStorage.setItem("refresh", response.data.refresh);
+
+
+const me = await axios.get("/users/me/", {
+  headers: {
+    Authorization: `Bearer ${response.data.access}`,
+  },
+});
+
+localStorage.setItem("role", me.data.role);
+
+
+      // 🚀 REDIRECCIÓN
+      navigate("/dashboard");
+
+    } catch (error) {
+      alert("Credenciales incorrectas");
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="Usuario"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+
+      <input
+        type="password"
+        placeholder="Contraseña"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+
+      <button type="submit">Ingresar</button>
+    </form>
+  );
+};
+
+export default Login;
