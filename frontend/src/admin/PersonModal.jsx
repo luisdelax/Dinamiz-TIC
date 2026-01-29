@@ -3,6 +3,125 @@ import { Dialog, Transition } from '@headlessui/react';
 import api from "../api/axios";
 import Spinner from '../components/Spinner';
 
+// Hierarchical list of dependencies
+const subdireccionFormList = [
+  {
+    id: "subdireccion",
+    label: "Subdirección",
+    children: [
+      {
+        id: "dependencias-directas",
+        label: "Dependencias Directas",
+        children: [
+          { id: "secretaria", label: "Secretaría" },
+          {
+            id: "sistema-integrado",
+            label: "Sistema Integrado de Autogestión y Control (Calidad, MIPG, SG-SST, SGPI)"
+          },
+          { id: "planeacion", label: "Planeación" },
+          {
+            id: "grupo-apoyo",
+            label: "Grupo de Apoyo Administrativo – Intercentro Complejo Sur"
+          }
+        ]
+      },
+      {
+        id: "area-administrativa",
+        label: "Área Administrativa",
+        children: [
+          {
+            id: "dinamizador-administrativo",
+            label: "Dinamizador Administrativo",
+            children: [
+              { id: "talento-humano", label: "Apoyo de Gestión de Talento Humano" },
+              { id: "recursos-financieros", label: "Gestión de Recursos Financieros" },
+              { id: "gestion-contractual", label: "Gestión Contractual" },
+              { id: "gestion-documental", label: "Gestión Documental" },
+              { id: "infraestructura-logistica", label: "Gestión de Infraestructura y Logística" },
+              { id: "comunicaciones", label: "Gestión de Comunicaciones" },
+              {
+                id: "relacionamiento-empresarial",
+                label: "Relacionamiento Empresarial y Servicio al Ciudadano"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: "area-formacion",
+        label: "Área de Formación",
+        children: [
+          {
+            id: "coordinacion-formacion",
+            label: "Coordinación de Formación Integral",
+            children: [
+              { id: "administracion-educativa", label: "Administración Educativa" },
+              {
+                id: "formacion-titulada",
+                label: "Coordinación Académica Formación Titulada"
+              },
+              {
+                id: "formacion-virtual",
+                label: "Coordinación Académica Virtual y Complementaria"
+              },
+              {
+                id: "educacion-media",
+                label: "Articulación con la Educación Media"
+              },
+              {
+                id: "bienestar-aprendiz",
+                label: "Bienestar al Aprendiz y Relacionamiento al Egresado"
+              },
+              {
+                id: "gestion-pedagogica",
+                label: "Gestión Pedagógica y Cultural"
+              },
+              { id: "aseguramiento-calidad", label: "Aseguramiento de la Calidad" }
+            ]
+          }
+        ]
+      },
+      {
+        id: "otras-dependencias",
+        label: "Otras Dependencias Misionales",
+        children: [
+          {
+            id: "certificacion-competencias",
+            label: "Evaluación y Certificación de Competencias Laborales"
+          },
+          {
+            id: "i-d-i",
+            label: "Gestión de la Investigación, el Desarrollo y la Innovación Tecnológica y Formativa",
+            children: [
+              { id: "servicios-tecnologicos", label: "Servicios Tecnológicos" }
+            ]
+          },
+          {
+            id: "emprendimiento",
+            label: "Gestión de Emprendimiento y Empresarismo"
+          },
+          { id: "instructor", label: "Instructor" } // New item
+        ]
+      }
+    ]
+  }
+];
+
+// Helper function to flatten the hierarchical list
+const flattenDependencies = (nodes, prefix = '') => {
+  let options = [];
+  nodes.forEach(node => {
+    const currentLabel = prefix ? `${prefix} > ${node.label}` : node.label;
+    options.push({ value: node.id, label: currentLabel });
+    if (node.children) {
+      options = options.concat(flattenDependencies(node.children, currentLabel));
+    }
+  });
+  return options;
+};
+
+const allDependencyOptions = flattenDependencies(subdireccionFormList);
+
 // PersonForm component
 const PersonForm = ({ person, onSubmit, onCancel, sites, loading }) => {
   const [formData, setFormData] = useState({
@@ -11,6 +130,7 @@ const PersonForm = ({ person, onSubmit, onCancel, sites, loading }) => {
     email: '',
     person_type: 'student',
     site: '',
+    dependencia: '', // New field
   });
   const [formError, setFormError] = useState('');
 
@@ -22,15 +142,23 @@ const PersonForm = ({ person, onSubmit, onCancel, sites, loading }) => {
         email: person.email || '',
         person_type: person.person_type || 'student',
         site: person.site || '', // Assuming site is an ID here
+        dependencia: person.dependencia || '', // New field
       });
     }
   }, [person]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    let newValue = value;
+
+    // Convert to uppercase for text fields, but not for email fields
+    if (type === 'text') {
+      newValue = value.toUpperCase();
+    }
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: newValue,
     }));
   };
 
@@ -53,13 +181,13 @@ const PersonForm = ({ person, onSubmit, onCancel, sites, loading }) => {
       <div>
         <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">Nombre</label>
         <input type="text" name="first_name" id="first_name" value={formData.first_name} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
         <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">Apellido</label>
         <input type="text" name="last_name" id="last_name" value={formData.last_name} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
@@ -71,7 +199,7 @@ const PersonForm = ({ person, onSubmit, onCancel, sites, loading }) => {
       <div>
         <label htmlFor="person_type" className="block text-sm font-medium text-gray-700">Tipo de Persona</label>
         <select name="person_type" id="person_type" value={formData.person_type} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase">
           <option value="student">Estudiante</option>
           <option value="employee">Funcionario</option>
         </select>
@@ -80,10 +208,21 @@ const PersonForm = ({ person, onSubmit, onCancel, sites, loading }) => {
       <div>
         <label htmlFor="site" className="block text-sm font-medium text-gray-700">Sede</label>
         <select name="site" id="site" value={formData.site} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required>
           <option value="">Seleccione una sede</option>
           {sites.map(site => (
             <option key={site.id} value={site.id}>{site.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label htmlFor="dependencia" className="block text-sm font-medium text-gray-700">Dependencia</label>
+        <select name="dependencia" id="dependencia" value={formData.dependencia} onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase">
+          <option value="">Seleccione una dependencia</option>
+          {allDependencyOptions.map(option => (
+            <option key={option.value} value={option.value}>{option.label}</option>
           ))}
         </select>
       </div>
@@ -131,10 +270,15 @@ const PersonModal = ({ isOpen, onClose, person, onSave }) => {
     setSubmitting(true);
     setError('');
     try {
+      // Clean up empty strings for foreign keys and optional fields
+      const dataToSend = { ...formData };
+      if (dataToSend.site === '') dataToSend.site = null;
+      if (dataToSend.dependencia === '') dataToSend.dependencia = null; // Convert empty string to null
+
       if (person) {
-        await api.put(`/organization/persons/${person.id}/`, formData);
+        await api.put(`/organization/persons/${person.id}/`, dataToSend);
       } else {
-        await api.post('/organization/persons/', formData);
+        await api.post('/organization/persons/', dataToSend);
       }
       onSave();
       onClose();

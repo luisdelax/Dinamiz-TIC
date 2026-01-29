@@ -1,19 +1,45 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api from "../api/axios";
 import Spinner from "../components/Spinner";
-import ClassroomModal from "./ClassroomModal"; // Import the new modal component
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline'; // Import icons
+import ClassroomModal from "./ClassroomModal";
+import { PencilIcon, TrashIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 const Classrooms = () => {
   const [classrooms, setClassrooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedClassroom, setSelectedClassroom] = useState(null); // To pass to modal for editing
+  const [selectedClassroom, setSelectedClassroom] = useState(null);
 
-  const fetchClassrooms = async () => {
+  // State for search and filters
+  const [searchTerm, setSearchTerm] = useState("");
+  const [siteFilter, setSiteFilter] = useState("");
+
+  // Options for filters (fetched)
+  const [sites, setSites] = useState([]);
+
+  // Fetch initial data for filters (sites)
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const sitesRes = await api.get("/organization/sites/");
+        setSites(sitesRes.data);
+      } catch (err) {
+        console.error("Error fetching initial data for filters:", err);
+      }
+    };
+    fetchInitialData();
+  }, []);
+
+  const fetchClassrooms = useCallback(async () => {
+    setLoading(true);
+    setError("");
     try {
-      const response = await api.get("/organization/classrooms/");
+      const params = new URLSearchParams();
+      if (searchTerm) params.append("search", searchTerm);
+      if (siteFilter) params.append("site", siteFilter);
+
+      const response = await api.get(`/organization/classrooms/?${params.toString()}`);
       setClassrooms(response.data);
     } catch (err) {
       setError("Failed to fetch classrooms.");
@@ -21,19 +47,26 @@ const Classrooms = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, siteFilter]);
 
+  // Debounced fetch for classrooms
   useEffect(() => {
-    fetchClassrooms();
-  }, []);
+    const handler = setTimeout(() => {
+      fetchClassrooms();
+    }, 300); // Debounce for 300ms
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [fetchClassrooms, searchTerm, siteFilter]);
 
   const handleAddClassroom = () => {
-    setSelectedClassroom(null); // Clear selected classroom for "add" mode
+    setSelectedClassroom(null);
     setIsModalOpen(true);
   };
 
   const handleEditClassroom = (classroom) => {
-    setSelectedClassroom(classroom); // Set selected classroom for "edit" mode
+    setSelectedClassroom(classroom);
     setIsModalOpen(true);
   };
 
@@ -41,7 +74,7 @@ const Classrooms = () => {
     if (window.confirm("Are you sure you want to delete this classroom?")) {
       try {
         await api.delete(`/organization/classrooms/${id}/`);
-        fetchClassrooms(); // Refresh the list
+        fetchClassrooms();
       } catch (err) {
         setError("Failed to delete classroom.");
         console.error(err);
@@ -55,7 +88,7 @@ const Classrooms = () => {
   };
 
   const handleClassroomSaved = () => {
-    fetchClassrooms(); // Refresh list after save
+    fetchClassrooms();
   };
 
   if (loading) {
@@ -67,17 +100,47 @@ const Classrooms = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 sm:px-8">
+    <div className="container mx-auto p-4 sm:p-4 md:p-6">
       <div className="py-8">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold leading-tight">Aulas</h2>
+          <h2 className="text-2xl font-semibold leading-tight text-gray-800">Aulas</h2>
           <button
             onClick={handleAddClassroom}
-            className="bg-indigo-600 text-gray-800 px-4 py-2 rounded-md hover:bg-indigo-700"
+            className="bg-green-700 text-white px-4 py-2 rounded-md hover:bg-green-800"
           >
             Agregar Aula
           </button>
         </div>
+
+        {/* Search and Filter Section */}
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="relative flex-grow">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Buscar por nombre, descripción..."
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          <select
+            className="block w-full pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+            value={siteFilter}
+            onChange={(e) => setSiteFilter(e.target.value)}
+          >
+            <option value="">Todas las Sedes</option>
+            {sites.map((site) => (
+              <option key={site.id} value={site.id}>
+                {site.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
           <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
             <table className="min-w-full leading-normal">

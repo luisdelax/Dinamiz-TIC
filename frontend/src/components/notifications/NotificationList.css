@@ -1,0 +1,100 @@
+.notification-list-container {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 350px;
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: 10px;
+}
+
+.notification-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.notification-list-header h3 {
+    margin: 0;
+}
+
+.mark-all-read-button {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-list li {
+    padding: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.notification-list li:last-child {
+    border-bottom: none;
+}
+
+.notification-list li.unread {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.notification-list h4 {
+    margin: 0 0 5px 0;
+    font-size: 0.9rem;
+}
+
+.notification-list p {
+    margin: 0 0 5px 0;
+    font-size: 0.85rem;
+    font-weight: normal;
+}
+
+.notification-list small {
+    font-size: 0.75rem;
+    color: #888;
+    font-weight: normal;
+}
+
+.mark-read-button {
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    float: right;
+}
+
+.no-notifications {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+}
+
+.close-button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}

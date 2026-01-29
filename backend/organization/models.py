@@ -31,6 +31,7 @@ class Person(models.Model):
     email = models.EmailField(unique=True)
     person_type = models.CharField(max_length=10, choices=PERSON_TYPE_CHOICES)
     site = models.ForeignKey(Site, on_delete=models.SET_NULL, null=True, blank=True)
+    dependencia = models.CharField(max_length=255, blank=True, null=True) # New field
 
     def __str__(self):
         return f"{self.last_name}, {self.first_name}"

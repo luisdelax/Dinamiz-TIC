@@ -38,9 +38,16 @@ const UserForm = ({ user, onSubmit, onCancel, loading, sites }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let newValue = value;
+
+    // Convert to uppercase for text fields, but not for email or password fields
+    if (type === 'text') {
+      newValue = value.toUpperCase();
+    }
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === 'checkbox' ? checked : newValue,
     }));
   };
 
@@ -67,7 +74,7 @@ const UserForm = ({ user, onSubmit, onCancel, loading, sites }) => {
       <div>
         <label htmlFor="username" className="block text-sm font-medium text-gray-700">Usuario</label>
         <input type="text" name="username" id="username" value={formData.username} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
@@ -79,13 +86,13 @@ const UserForm = ({ user, onSubmit, onCancel, loading, sites }) => {
       <div>
         <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">Nombre</label>
         <input type="text" name="first_name" id="first_name" value={formData.first_name} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" />
       </div>
 
       <div>
         <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">Apellido</label>
         <input type="text" name="last_name" id="last_name" value={formData.last_name} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" />
       </div>
 
       {(!user || user.id === undefined) && ( // Only show password field for new users

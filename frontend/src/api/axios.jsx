@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api/",
+  baseURL: "/api/",
 });
 
 // Request interceptor to add the auth token to headers
@@ -27,14 +27,13 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      const refreshToken = localStorage.getItem("refresh");
-      if (refreshToken) {
-        try {
-          const response = await axios.post("http://127.0.0.1:8000/api/auth/refresh/", {
-            refresh: refreshToken,
-          });
-          const { access } = response.data;
-          
+                const refreshToken = localStorage.getItem("refresh");
+                if (refreshToken) {
+                  try {
+                    const response = await axios.post("/api/auth/refresh/", {
+                      refresh: refreshToken,
+                    });
+                    const { access } = response.data;          
           localStorage.setItem("access", access);
           
           // Update the header of the original request

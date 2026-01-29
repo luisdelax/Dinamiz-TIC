@@ -8,11 +8,16 @@ from rest_framework.permissions import IsAuthenticated
 from users.permissions import IsAdminOrTechnician, IsOwnerOrAdminOrTechnician
 from users.models import User
 from django.utils import timezone
+from rest_framework import filters # Import filters
+from django_filters.rest_framework import DjangoFilterBackend # Import DjangoFilterBackend
 
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter] # Add filter backends
+    filterset_fields = ['status', 'priority', 'assigned_to', 'created_by'] # Define fields for filtering
+    search_fields = ['title', 'description', 'created_by__username', 'assigned_to__username', 'id'] # Define fields for searching
 
     def get_permissions(self):
         """

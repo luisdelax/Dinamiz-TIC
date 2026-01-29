@@ -40,9 +40,18 @@ const NetworkDeviceForm = ({ device, onSubmit, onCancel, sites, loading }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let newValue = value;
+
+    // Convert to uppercase for most text fields, excluding specific format fields
+    if (e.target.type === 'text' && name !== 'asset_tag' && name !== 'serial_number' && name !== 'ip_address' && name !== 'mac_address') {
+      newValue = value.toUpperCase();
+    } else if (e.target.tagName === 'TEXTAREA') {
+      newValue = value.toUpperCase();
+    }
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: newValue,
     }));
   };
 
@@ -72,13 +81,13 @@ const NetworkDeviceForm = ({ device, onSubmit, onCancel, sites, loading }) => {
       <div>
         <label htmlFor="asset_tag" className="block text-sm font-medium text-gray-700">Código de Activo</label>
         <input type="text" name="asset_tag" id="asset_tag" value={formData.asset_tag} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" readOnly={!!device} />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" readOnly={!!device} />
       </div>
 
       <div>
         <label htmlFor="device_type" className="block text-sm font-medium text-gray-700">Tipo de Dispositivo</label>
         <select name="device_type" id="device_type" value={formData.device_type} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase">
           <option value="router">Router</option>
           <option value="switch">Switch</option>
           <option value="ap">Access Point</option>
@@ -90,19 +99,19 @@ const NetworkDeviceForm = ({ device, onSubmit, onCancel, sites, loading }) => {
       <div>
         <label htmlFor="brand" className="block text-sm font-medium text-gray-700">Marca</label>
         <input type="text" name="brand" id="brand" value={formData.brand} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
         <label htmlFor="model" className="block text-sm font-medium text-gray-700">Modelo</label>
         <input type="text" name="model" id="model" value={formData.model} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
         <label htmlFor="serial_number" className="block text-sm font-medium text-gray-700">Número de Serie</label>
         <input type="text" name="serial_number" id="serial_number" value={formData.serial_number} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
@@ -114,19 +123,19 @@ const NetworkDeviceForm = ({ device, onSubmit, onCancel, sites, loading }) => {
       <div>
         <label htmlFor="mac_address" className="block text-sm font-medium text-gray-700">Dirección MAC</label>
         <input type="text" name="mac_address" id="mac_address" value={formData.mac_address} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" />
       </div>
 
       <div>
         <label htmlFor="location" className="block text-sm font-medium text-gray-700">Ubicación</label>
         <input type="text" name="location" id="location" value={formData.location} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" />
       </div>
 
       <div>
         <label htmlFor="status" className="block text-sm font-medium text-gray-700">Estado</label>
         <select name="status" id="status" value={formData.status} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase">
           <option value="active">Activo</option>
           <option value="maintenance">En mantenimiento</option>
           <option value="down">Fuera de servicio</option>
@@ -136,7 +145,7 @@ const NetworkDeviceForm = ({ device, onSubmit, onCancel, sites, loading }) => {
       <div>
         <label htmlFor="site" className="block text-sm font-medium text-gray-700">Sede</label>
         <select name="site" id="site" value={formData.site} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required>
           <option value="">Seleccione una sede</option>
           {sites.map(site => (
             <option key={site.id} value={site.id}>{site.name}</option>
@@ -147,7 +156,7 @@ const NetworkDeviceForm = ({ device, onSubmit, onCancel, sites, loading }) => {
       <div>
         <label htmlFor="notes" className="block text-sm font-medium text-gray-700">Notas</label>
         <textarea name="notes" id="notes" value={formData.notes} onChange={handleChange}
-                  rows="3" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
+                  rows="3" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase"></textarea>
       </div>
 
       <div className="flex justify-end space-x-2">

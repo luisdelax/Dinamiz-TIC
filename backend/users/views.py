@@ -15,13 +15,20 @@ class UserViewSet(viewsets.ModelViewSet):
 
     # Allow a user to update their own profile without being admin
     def get_permissions(self):
-        if self.action == 'set_password': # Custom action for password change
+        if self.action == 'me':
+            return [IsAuthenticated()] # Any authenticated user can view their own profile via 'me'
+        elif self.action == 'set_password': # Custom action for password change
             return [IsAuthenticated()] # Any authenticated user can change their own password
-        elif self.action == 'retrieve' and self.request.user.id == int(self.kwargs['pk']):
-            return [IsAuthenticated()] # User can view their own profile
-        elif self.action in ['update', 'partial_update'] and self.request.user.id == int(self.kwargs['pk']):
-            return [IsAuthenticated()] # User can update their own profile
+        elif self.action == 'retrieve' and 'pk' in self.kwargs and self.request.user.id == int(self.kwargs['pk']):
+            return [IsAuthenticated()] # User can view their own profile by ID
+        elif self.action in ['update', 'partial_update'] and 'pk' in self.kwargs and self.request.user.id == int(self.kwargs['pk']):
+            return [IsAuthenticated()] # User can update their own profile by ID
         return super().get_permissions()
+
+    @action(detail=False, methods=['get'])
+    def me(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
 
     @action(detail=True, methods=['post'], url_path='set_password')
     def set_password(self, request, pk=None):

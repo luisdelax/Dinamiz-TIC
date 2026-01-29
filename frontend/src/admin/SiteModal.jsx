@@ -26,9 +26,15 @@ const SiteForm = ({ site, onSubmit, onCancel, loading }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let newValue = value;
+
+    if (type === 'text') {
+      newValue = value.toUpperCase();
+    }
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === 'checkbox' ? checked : newValue,
     }));
   };
 
@@ -51,19 +57,19 @@ const SiteForm = ({ site, onSubmit, onCancel, loading }) => {
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nombre</label>
         <input type="text" name="name" id="name" value={formData.name} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
         <label htmlFor="address" className="block text-sm font-medium text-gray-700">Dirección</label>
         <input type="text" name="address" id="address" value={formData.address} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" />
       </div>
 
       <div>
         <label htmlFor="city" className="block text-sm font-medium text-gray-700">Ciudad</label>
         <input type="text" name="city" id="city" value={formData.city} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" />
       </div>
 
       <div className="flex items-center">

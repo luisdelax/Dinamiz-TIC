@@ -41,9 +41,17 @@ const TicketForm = ({ ticket, onSubmit, onCancel, computers, networkDevices, sit
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let newValue = value;
+
+    if (e.target.type === 'text') {
+      newValue = value.toUpperCase();
+    } else if (e.target.tagName === 'TEXTAREA') {
+      newValue = value.toUpperCase();
+    }
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: newValue,
     }));
   };
 
@@ -66,13 +74,13 @@ const TicketForm = ({ ticket, onSubmit, onCancel, computers, networkDevices, sit
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-gray-700">Título</label>
         <input type="text" name="title" id="title" value={formData.title} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">Descripción</label>
         <textarea name="description" id="description" value={formData.description} onChange={handleChange}
-                  rows="3" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required></textarea>
+                  rows="3" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required></textarea>
       </div>
 
       <div>

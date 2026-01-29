@@ -4,6 +4,7 @@ import { Menu, Transition } from '@headlessui/react';
 import { ChevronDownIcon, UserCircleIcon, ArrowRightOnRectangleIcon, KeyIcon } from '@heroicons/react/24/solid';
 import { Bars3Icon } from '@heroicons/react/24/outline'; // Import Bars3Icon
 import ChangePasswordModal from './ChangePasswordModal';
+import NotificationIcon from "./notifications/NotificationIcon";
 
 const Header = ({ toggleSidebar }) => { // Accept toggleSidebar prop
   const { user, logout } = useAuth();
@@ -26,7 +27,8 @@ const Header = ({ toggleSidebar }) => { // Accept toggleSidebar prop
         {/* Placeholder for breadcrumbs or page title */}
         <h1 className="text-xl font-semibold">Dashboard</h1>
       </div>
-      <div className="flex items-center">
+      <div className="flex items-center space-x-4">
+        <NotificationIcon />
         <Menu as="div" className="relative inline-block text-left">
           <div>
             <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">

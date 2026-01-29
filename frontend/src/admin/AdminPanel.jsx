@@ -116,7 +116,7 @@ const AdminPanel = () => {
           Esta API devolverá los datos en formato JSON, que puede ser importado y transformado en Power BI.
         </p>
         <div className="bg-gray-50 p-4 rounded-md font-mono text-sm text-gray-800 break-all">
-          <code>http://127.0.0.1:8000/api/reports/inventory/powerbi/</code>
+          <code>{`${window.location.origin}/api/reports/inventory/powerbi/`}</code>
         </div>
         <p className="text-gray-600 mt-4">
           Asegúrese de configurar la autenticación adecuada (Token Web JSON) en Power BI para acceder a este endpoint.

@@ -23,10 +23,18 @@ const ClassroomForm = ({ classroom, onSubmit, onCancel, sites, loading }) => {
   }, [classroom]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    let newValue = value;
+
+    if (type === 'text') {
+      newValue = value.toUpperCase();
+    } else if (e.target.tagName === 'TEXTAREA') {
+      newValue = value.toUpperCase();
+    }
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: newValue,
     }));
   };
 
@@ -49,13 +57,13 @@ const ClassroomForm = ({ classroom, onSubmit, onCancel, sites, loading }) => {
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nombre</label>
         <input type="text" name="name" id="name" value={formData.name} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">Descripción</label>
         <textarea name="description" id="description" value={formData.description} onChange={handleChange}
-                  rows="3" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
+                  rows="3" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase"></textarea>
       </div>
 
       <div>

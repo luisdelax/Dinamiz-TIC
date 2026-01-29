@@ -5,6 +5,19 @@ import Spinner from '../components/Spinner';
 
 // ComputerForm component (nested inside ComputerModal for simplicity)
 const ComputerForm = ({ computer, onSubmit, onCancel, sites, persons, classrooms, loading }) => {
+  const OPERATING_SYSTEM_OPTIONS = [
+    { value: '', label: 'Seleccione un Sistema Operativo' },
+    { value: 'WINDOWS 11 PRO', label: 'Windows 11 Pro' },
+    { value: 'WINDOWS 11 HOME', label: 'Windows 11 Home' },
+    { value: 'WINDOWS 10 PRO', label: 'Windows 10 Pro' },
+    { value: 'WINDOWS 10 HOME', label: 'Windows 10 Home' },
+    { value: 'UBUNTU', label: 'Ubuntu' },
+    { value: 'FEDORA', label: 'Fedora' },
+    { value: 'DEBIAN', label: 'Debian' },
+    { value: 'MACOS', label: 'macOS' },
+    { value: 'CHROME OS', label: 'Chrome OS' },
+    { value: 'OTRO', label: 'Otro' },
+  ];
   const [formData, setFormData] = useState({
     asset_tag: '',
     equipment_type: 'desktop',
@@ -12,8 +25,8 @@ const ComputerForm = ({ computer, onSubmit, onCancel, sites, persons, classrooms
     model: '',
     serial_number: '',
     processor: '',
-    ram: '',
-    storage: '',
+    ram: { value: '', unit: 'GB' },
+    storage: { value: '', unit: 'GB' },
     operating_system: '',
     status: 'active',
     assigned_to_person: '',
@@ -24,8 +37,24 @@ const ComputerForm = ({ computer, onSubmit, onCancel, sites, persons, classrooms
   });
   const [formError, setFormError] = useState('');
 
+  const UNIT_OPTIONS = [
+    { value: 'MB', label: 'MB' },
+    { value: 'GB', label: 'GB' },
+    { value: 'TB', label: 'TB' },
+  ];
+
   useEffect(() => {
     if (computer) {
+      // Helper function to parse '8GB' into { value: '8', unit: 'GB' }
+      const parseMemoryString = (memoryString) => {
+        if (!memoryString) return { value: '', unit: 'GB' };
+        const match = memoryString.match(/^(\d+)\s*(MB|GB|TB)$/i);
+        if (match) {
+          return { value: match[1], unit: match[2].toUpperCase() };
+        }
+        return { value: memoryString, unit: 'GB' }; // Fallback if format is unexpected
+      };
+
       setFormData({
         asset_tag: computer.asset_tag || '',
         equipment_type: computer.equipment_type || 'desktop',
@@ -33,8 +62,8 @@ const ComputerForm = ({ computer, onSubmit, onCancel, sites, persons, classrooms
         model: computer.model || '',
         serial_number: computer.serial_number || '',
         processor: computer.processor || '',
-        ram: computer.ram || '',
-        storage: computer.storage || '',
+        ram: parseMemoryString(computer.ram),
+        storage: parseMemoryString(computer.storage),
         operating_system: computer.operating_system || '',
         status: computer.status || 'active',
         assigned_to_person: computer.assigned_to_person || '',
@@ -47,10 +76,42 @@ const ComputerForm = ({ computer, onSubmit, onCancel, sites, persons, classrooms
   }, [computer]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    let newValue = value;
+
+    if (name === 'ram' || name === 'storage') {
+      const unitMatch = value.match(/^(\d+)\s*(MB|GB|TB)$/i);
+      if (unitMatch) {
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: { value: unitMatch[1], unit: unitMatch[2].toUpperCase() },
+        }));
+      } else {
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: { ...prevData[name], value: value },
+        }));
+      }
+      return;
+    } else if (name === 'ram_unit' || name === 'storage_unit') {
+      const fieldName = name.split('_')[0]; // 'ram' or 'storage'
+      setFormData((prevData) => ({
+        ...prevData,
+        [fieldName]: { ...prevData[fieldName], unit: newValue },
+      }));
+      return;
+    }
+
+    // Convert to uppercase for most text fields, except asset_tag and serial_number which might have specific formats
+    if (type === 'text' && name !== 'asset_tag' && name !== 'serial_number') {
+      newValue = value.toUpperCase();
+    } else if (e.target.tagName === 'TEXTAREA') {
+      newValue = value.toUpperCase();
+    }
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: newValue,
     }));
   };
 
@@ -70,6 +131,25 @@ const ComputerForm = ({ computer, onSubmit, onCancel, sites, persons, classrooms
         delete dataToSend.asset_tag;
     }
 
+    // Convert empty purchase_date to null for backend
+    if (dataToSend.purchase_date === '') {
+      dataToSend.purchase_date = null;
+    }
+
+    // Combine ram value and unit into a single string
+    if (dataToSend.ram.value) {
+      dataToSend.ram = `${dataToSend.ram.value}${dataToSend.ram.unit}`;
+    } else {
+      dataToSend.ram = ''; // Send empty string if no value
+    }
+
+    // Combine storage value and unit into a single string
+    if (dataToSend.storage.value) {
+      dataToSend.storage = `${dataToSend.storage.value}${dataToSend.storage.unit}`;
+    } else {
+      dataToSend.storage = ''; // Send empty string if no value
+    }
+
     onSubmit(dataToSend);
   };
 
@@ -80,13 +160,13 @@ const ComputerForm = ({ computer, onSubmit, onCancel, sites, persons, classrooms
       <div>
         <label htmlFor="asset_tag" className="block text-sm font-medium text-gray-700">Código de Activo</label>
         <input type="text" name="asset_tag" id="asset_tag" value={formData.asset_tag} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" readOnly={!!computer} />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" readOnly={!!computer} />
       </div>
 
       <div>
         <label htmlFor="equipment_type" className="block text-sm font-medium text-gray-700">Tipo de Equipo</label>
         <select name="equipment_type" id="equipment_type" value={formData.equipment_type} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase">
           <option value="desktop">PC Escritorio</option>
           <option value="laptop">Laptop</option>
         </select>
@@ -95,49 +175,93 @@ const ComputerForm = ({ computer, onSubmit, onCancel, sites, persons, classrooms
       <div>
         <label htmlFor="brand" className="block text-sm font-medium text-gray-700">Marca</label>
         <input type="text" name="brand" id="brand" value={formData.brand} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
         <label htmlFor="model" className="block text-sm font-medium text-gray-700">Modelo</label>
         <input type="text" name="model" id="model" value={formData.model} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
         <label htmlFor="serial_number" className="block text-sm font-medium text-gray-700">Número de Serie</label>
         <input type="text" name="serial_number" id="serial_number" value={formData.serial_number} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
         <label htmlFor="processor" className="block text-sm font-medium text-gray-700">Procesador</label>
         <input type="text" name="processor" id="processor" value={formData.processor} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" />
       </div>
 
       <div>
         <label htmlFor="ram" className="block text-sm font-medium text-gray-700">RAM</label>
-        <input type="text" name="ram" id="ram" value={formData.ram} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+        <div className="flex mt-1">
+          <input
+            type="number"
+            name="ram"
+            id="ram"
+            value={formData.ram.value}
+            onChange={(e) => handleChange({ target: { name: 'ram', value: e.target.value } })}
+            className="block w-full rounded-l-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase"
+            placeholder="Ej: 8"
+          />
+          <select
+            name="ram_unit"
+            id="ram_unit"
+            value={formData.ram.unit}
+            onChange={(e) => handleChange({ target: { name: 'ram_unit', value: e.target.value } })}
+            className="rounded-r-md border-l-0 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase"
+          >
+            {UNIT_OPTIONS.map(option => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div>
         <label htmlFor="storage" className="block text-sm font-medium text-gray-700">Almacenamiento</label>
-        <input type="text" name="storage" id="storage" value={formData.storage} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+        <div className="flex mt-1">
+          <input
+            type="number"
+            name="storage"
+            id="storage"
+            value={formData.storage.value}
+            onChange={(e) => handleChange({ target: { name: 'storage', value: e.target.value } })}
+            className="block w-full rounded-l-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase"
+            placeholder="Ej: 256"
+          />
+          <select
+            name="storage_unit"
+            id="storage_unit"
+            value={formData.storage.unit}
+            onChange={(e) => handleChange({ target: { name: 'storage_unit', value: e.target.value } })}
+            className="rounded-r-md border-l-0 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase"
+          >
+            {UNIT_OPTIONS.map(option => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div>
         <label htmlFor="operating_system" className="block text-sm font-medium text-gray-700">Sistema Operativo</label>
-        <input type="text" name="operating_system" id="operating_system" value={formData.operating_system} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+        <select name="operating_system" id="operating_system" value={formData.operating_system} onChange={handleChange}
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase">
+          {OPERATING_SYSTEM_OPTIONS.map(option => (
+            <option key={option.value} value={option.value}>{option.label}</option>
+          ))}
+        </select>
       </div>
 
       <div>
         <label htmlFor="status" className="block text-sm font-medium text-gray-700">Estado</label>
         <select name="status" id="status" value={formData.status} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase">
           <option value="active">Activo</option>
           <option value="maintenance">En mantenimiento</option>
           <option value="retired">Retirado</option>
@@ -147,7 +271,7 @@ const ComputerForm = ({ computer, onSubmit, onCancel, sites, persons, classrooms
       <div>
         <label htmlFor="site" className="block text-sm font-medium text-gray-700">Sede</label>
         <select name="site" id="site" value={formData.site} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required>
           <option value="">Seleccione una sede</option>
           {sites.map(site => (
             <option key={site.id} value={site.id}>{site.name}</option>
@@ -158,7 +282,7 @@ const ComputerForm = ({ computer, onSubmit, onCancel, sites, persons, classrooms
       <div>
         <label htmlFor="assigned_to_person" className="block text-sm font-medium text-gray-700">Asignado a Persona</label>
         <select name="assigned_to_person" id="assigned_to_person" value={formData.assigned_to_person} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase">
           <option value="">No Asignado</option>
           {persons.map(person => (
             <option key={person.id} value={person.id}>{person.first_name} {person.last_name}</option>
@@ -169,7 +293,7 @@ const ComputerForm = ({ computer, onSubmit, onCancel, sites, persons, classrooms
       <div>
         <label htmlFor="assigned_to_classroom" className="block text-sm font-medium text-gray-700">Asignado a Aula</label>
         <select name="assigned_to_classroom" id="assigned_to_classroom" value={formData.assigned_to_classroom} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase">
           <option value="">No Asignado</option>
           {classrooms.map(classroom => (
             <option key={classroom.id} value={classroom.id}>{classroom.name} ({classroom.site.name})</option>
@@ -180,13 +304,13 @@ const ComputerForm = ({ computer, onSubmit, onCancel, sites, persons, classrooms
       <div>
         <label htmlFor="purchase_date" className="block text-sm font-medium text-gray-700">Fecha de Compra</label>
         <input type="date" name="purchase_date" id="purchase_date" value={formData.purchase_date} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" />
       </div>
 
       <div>
         <label htmlFor="notes" className="block text-sm font-medium text-gray-700">Notas</label>
         <textarea name="notes" id="notes" value={formData.notes} onChange={handleChange}
-                  rows="3" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
+                  rows="3" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase"></textarea>
       </div>
 
       <div className="flex justify-end space-x-2">

@@ -1,6 +1,6 @@
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, Spacer, PageBreak, Image
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.pagesizes import A4 # Changed to A4 portrait for better detail view
+from reportlab.lib.pagesizes import A4, landscape # Changed to A4 portrait for better detail view
 from reportlab.lib.units import inch
 from django.http import HttpResponse
 from reportlab.lib.styles import ParagraphStyle

@@ -13,7 +13,12 @@ class ClassroomSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PersonSerializer(serializers.ModelSerializer):
-    site_name = serializers.CharField(source='site.name', read_only=True)
+    site_name = serializers.SerializerMethodField()
+    dependencia = serializers.CharField(required=False, allow_blank=True)
+
     class Meta:
         model = Person
-        fields = '__all__'
+        fields = ('id', 'first_name', 'last_name', 'email', 'person_type', 'site', 'site_name', 'dependencia')
+
+    def get_site_name(self, obj):
+        return obj.site.name if obj.site else None

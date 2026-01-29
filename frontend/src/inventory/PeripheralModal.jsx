@@ -40,9 +40,18 @@ const PeripheralForm = ({ peripheral, onSubmit, onCancel, sites, persons, classr
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let newValue = value;
+
+    // Convert to uppercase for most text fields, excluding specific format fields
+    if (e.target.type === 'text' && name !== 'asset_tag' && name !== 'serial_number') {
+      newValue = value.toUpperCase();
+    } else if (e.target.tagName === 'TEXTAREA') {
+      newValue = value.toUpperCase();
+    }
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: newValue,
     }));
   };
 
@@ -72,13 +81,13 @@ const PeripheralForm = ({ peripheral, onSubmit, onCancel, sites, persons, classr
       <div>
         <label htmlFor="asset_tag" className="block text-sm font-medium text-gray-700">Código de Activo</label>
         <input type="text" name="asset_tag" id="asset_tag" value={formData.asset_tag} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" readOnly={!!peripheral} />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" readOnly={!!peripheral} />
       </div>
 
       <div>
         <label htmlFor="peripheral_type" className="block text-sm font-medium text-gray-700">Tipo de Periférico</label>
         <select name="peripheral_type" id="peripheral_type" value={formData.peripheral_type} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase">
           <option value="keyboard">Teclado</option>
           <option value="mouse">Ratón</option>
           <option value="monitor">Monitor</option>
@@ -94,25 +103,25 @@ const PeripheralForm = ({ peripheral, onSubmit, onCancel, sites, persons, classr
       <div>
         <label htmlFor="brand" className="block text-sm font-medium text-gray-700">Marca</label>
         <input type="text" name="brand" id="brand" value={formData.brand} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
         <label htmlFor="model" className="block text-sm font-medium text-gray-700">Modelo</label>
         <input type="text" name="model" id="model" value={formData.model} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
         <label htmlFor="serial_number" className="block text-sm font-medium text-gray-700">Número de Serie</label>
         <input type="text" name="serial_number" id="serial_number" value={formData.serial_number} onChange={handleChange}
-               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required />
       </div>
 
       <div>
         <label htmlFor="status" className="block text-sm font-medium text-gray-700">Estado</label>
         <select name="status" id="status" value={formData.status} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase">
           <option value="active">Activo</option>
           <option value="maintenance">En mantenimiento</option>
           <option value="retired">Retirado</option>
@@ -122,7 +131,7 @@ const PeripheralForm = ({ peripheral, onSubmit, onCancel, sites, persons, classr
       <div>
         <label htmlFor="site" className="block text-sm font-medium text-gray-700">Sede</label>
         <select name="site" id="site" value={formData.site} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase" required>
           <option value="">Seleccione una sede</option>
           {sites.map(site => (
             <option key={site.id} value={site.id}>{site.name}</option>
@@ -133,7 +142,7 @@ const PeripheralForm = ({ peripheral, onSubmit, onCancel, sites, persons, classr
       <div>
         <label htmlFor="assigned_to_person" className="block text-sm font-medium text-gray-700">Asignado a Persona</label>
         <select name="assigned_to_person" id="assigned_to_person" value={formData.assigned_to_person} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase">
           <option value="">No Asignado</option>
           {persons.map(person => (
             <option key={person.id} value={person.id}>{person.first_name} {person.last_name}</option>
@@ -144,7 +153,7 @@ const PeripheralForm = ({ peripheral, onSubmit, onCancel, sites, persons, classr
       <div>
         <label htmlFor="assigned_to_classroom" className="block text-sm font-medium text-gray-700">Asignado a Aula</label>
         <select name="assigned_to_classroom" id="assigned_to_classroom" value={formData.assigned_to_classroom} onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase">
           <option value="">No Asignado</option>
           {classrooms.map(classroom => (
             <option key={classroom.id} value={classroom.id}>{classroom.name} ({classroom.site.name})</option>
@@ -161,7 +170,7 @@ const PeripheralForm = ({ peripheral, onSubmit, onCancel, sites, persons, classr
       <div>
         <label htmlFor="notes" className="block text-sm font-medium text-gray-700">Notas</label>
         <textarea name="notes" id="notes" value={formData.notes} onChange={handleChange}
-                  rows="3" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
+                  rows="3" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 uppercase"></textarea>
       </div>
 
       <div className="flex justify-end space-x-2">

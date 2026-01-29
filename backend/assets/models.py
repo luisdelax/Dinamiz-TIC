@@ -1,6 +1,7 @@
 from django.db import models
 from organization.models import Site, Classroom, Person
 import uuid
+from django.utils import timezone # Import timezone
 
 class Computer(models.Model):
 
@@ -71,7 +72,23 @@ class Computer(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.asset_tag:
-            self.asset_tag = f"COMP-{uuid.uuid4().hex[:8].upper()}"
+            prefix_map = {
+                'CME': '92141014',
+                'CMM': '92141015',
+                'CEET': '92141016',
+            }
+            if self.site:
+                site_name = self.site.name
+                if site_name in prefix_map:
+                    prefix = prefix_map[site_name]
+                    asset_type_code = "COMP"
+                    timestamp = int(timezone.now().timestamp())
+                    unique_suffix = f"{timestamp}-{uuid.uuid4().hex[:4].upper()}"
+                    self.asset_tag = f"{prefix}-{asset_type_code}-{unique_suffix}"
+                else:
+                    self.asset_tag = f"COMP-{uuid.uuid4().hex[:8].upper()}"
+            else:
+                self.asset_tag = f"COMP-{uuid.uuid4().hex[:8].upper()}"
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -142,7 +159,23 @@ class NetworkDevice(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.asset_tag:
-            self.asset_tag = f"NET-{uuid.uuid4().hex[:8].upper()}"
+            prefix_map = {
+                'CME': '92141014',
+                'CMM': '92141015',
+                'CEET': '92141016',
+            }
+            if self.site:
+                site_name = self.site.name
+                if site_name in prefix_map:
+                    prefix = prefix_map[site_name]
+                    asset_type_code = "NET"
+                    timestamp = int(timezone.now().timestamp())
+                    unique_suffix = f"{timestamp}-{uuid.uuid4().hex[:4].upper()}"
+                    self.asset_tag = f"{prefix}-{asset_type_code}-{unique_suffix}"
+                else:
+                    self.asset_tag = f"NET-{uuid.uuid4().hex[:8].upper()}"
+            else:
+                self.asset_tag = f"NET-{uuid.uuid4().hex[:8].upper()}"
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -209,7 +242,23 @@ class Peripheral(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.asset_tag:
-            self.asset_tag = f"PERI-{uuid.uuid4().hex[:8].upper()}"
+            prefix_map = {
+                'CME': '92141014',
+                'CMM': '92141015',
+                'CEET': '92141016',
+            }
+            if self.site:
+                site_name = self.site.name
+                if site_name in prefix_map:
+                    prefix = prefix_map[site_name]
+                    asset_type_code = "PERI"
+                    timestamp = int(timezone.now().timestamp())
+                    unique_suffix = f"{timestamp}-{uuid.uuid4().hex[:4].upper()}"
+                    self.asset_tag = f"{prefix}-{asset_type_code}-{unique_suffix}"
+                else:
+                    self.asset_tag = f"PERI-{uuid.uuid4().hex[:8].upper()}"
+            else:
+                self.asset_tag = f"PERI-{uuid.uuid4().hex[:8].upper()}"
         super().save(*args, **kwargs)
 
     def __str__(self):
