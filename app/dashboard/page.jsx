@@ -28,6 +28,7 @@ import {
   FilePlus
 } from 'lucide-react'
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import OpenCodeChat from '@/components/OpenCodeChat'
 
 export default function Dashboard() {
   const [user, setUser] = useState(null)
@@ -775,6 +776,7 @@ export default function Dashboard() {
           </p>
         </footer>
       </div>
+      <OpenCodeChat />
     </div>
   )
 }
