@@ -1,0 +1,86 @@
+import MainLayout from "../layout/MainLayout";
+
+const Dashboard = () => {
+  return (
+    <MainLayout>
+      <h1 className="text-2xl font-semibold mb-6">
+        Dashboard
+      </h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <p className="text-gray-500">Equipos</p>
+          <h2 className="text-3xl font-bold">24</h2>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow">
+          <p className="text-gray-500">Tickets abiertos</p>
+          <h2 className="text-3xl font-bold">5</h2>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow">
+          <p className="text-gray-500">En mantenimiento</p>
+          <h2 className="text-3xl font-bold">2</h2>
+        </div>
+      </div>
+    </MainLayout>
+  );
+};
+
+export default Dashboard;
+
+'''
+import { useEffect, useState } from "react";
+import api from "../api/axios";
+
+export default function Dashboard() {
+  const [stats, setStats] = useState({
+    assets: 0,
+    open_tickets: 0,
+    closed_tickets: 0,
+  });
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api
+      .get("dashboard/stats/")
+      .then((res) => {
+        setStats(res.data);
+      })
+      .catch((err) => {
+        console.error("Error cargando dashboard:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <p>Cargando dashboard...</p>;
+  }
+
+  return (
+    <div>
+      <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white p-4 rounded shadow">
+          <p className="text-sm text-gray-500">Equipos</p>
+          <p className="text-2xl font-bold">{stats.assets}</p>
+        </div>
+
+        <div className="bg-white p-4 rounded shadow">
+          <p className="text-sm text-gray-500">Tickets abiertos</p>
+          <p className="text-2xl font-bold">{stats.open_tickets}</p>
+        </div>
+
+        <div className="bg-white p-4 rounded shadow">
+          <p className="text-sm text-gray-500">Tickets cerrados</p>
+          <p className="text-2xl font-bold">{stats.closed_tickets}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+'''
