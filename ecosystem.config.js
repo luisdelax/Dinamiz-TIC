@@ -12,7 +12,8 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       PORT: 3000,
-      HOST: '0.0.0.0'  // <-- ESTA LÍNEA ES CLAVE
+      HOST: '0.0.0.0',
+      AI_PROVIDER: 'openai'
     }
   }]
 }

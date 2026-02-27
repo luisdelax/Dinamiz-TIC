@@ -139,15 +139,17 @@ export default function Informes() {
   }
 
   const powerBiEndpoints = [
-    { key: 'equipos', name: 'Equipos', url: '/api/informes?tipo=equipos' },
-    { key: 'perifericos', name: 'Periféricos', url: '/api/informes?tipo=perifericos' },
-    { key: 'audiovisuales', name: 'Audiovisuales', url: '/api/informes?tipo=audiovisuales' },
-    { key: 'tickets', name: 'Tickets', url: '/api/informes?tipo=tickets' },
-    { key: 'tickets-tecnico', name: 'Tickets por Técnico', url: '/api/informes?tipo=tickets-tecnico' },
-    { key: 'prestamos', name: 'Préstamos', url: '/api/informes?tipo=prestamos' },
-    { key: 'auditorio', name: 'Auditorio', url: '/api/informes?tipo=auditorio' },
-    { key: 'estadisticas', name: 'Estadísticas', url: '/api/informes?tipo=estadisticas' },
+    { key: 'equipos', name: 'Equipos', url: '/api/informes/public?tipo=equipos' },
+    { key: 'perifericos', name: 'Periféricos', url: '/api/informes/public?tipo=perifericos' },
+    { key: 'audiovisuales', name: 'Audiovisuales', url: '/api/informes/public?tipo=audiovisuales' },
+    { key: 'tickets', name: 'Tickets', url: '/api/informes/public?tipo=tickets' },
+    { key: 'tickets-tecnico', name: 'Tickets por Técnico', url: '/api/informes/public?tipo=tickets-tecnico' },
+    { key: 'prestamos', name: 'Préstamos', url: '/api/informes/public?tipo=prestamos' },
+    { key: 'auditorio', name: 'Auditorio', url: '/api/informes/public?tipo=auditorio' },
+    { key: 'estadisticas', name: 'Estadísticas', url: '/api/informes/public?tipo=estadisticas' },
   ]
+
+  const powerBiApiKey = 'dinamiz-tic-reports-2024-secure'
 
   const downloadInforme = async (tipo, title) => {
     setDownloading(tipo)
@@ -199,16 +201,16 @@ export default function Informes() {
     <div className="min-h-screen bg-slate-900 flex">
       <motion.aside
         initial={false}
-        animate={{ width: sidebarOpen ? 260 : 80 }}
-        className="bg-slate-950 border-r border-green-500/20 flex flex-col"
+        animate={{ x: sidebarOpen ? 0 : -260 }}
+        className="bg-slate-950 border-r border-green-500/20 flex flex-col fixed left-0 top-0 h-full z-50 w-[260px]"
       >
         <div className="p-4 border-b border-green-500/20">
-          <h1 className={`font-bold text-green-400 transition-all ${sidebarOpen ? 'text-xl' : 'text-lg text-center'}`}>
-            {sidebarOpen ? 'Dinamiz TIC' : 'DT'}
+          <h1 className="font-bold text-green-400 text-xl">
+            Dinamiz TIC
           </h1>
         </div>
 
-        <nav className="flex-1 p-3 space-y-1">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {menuItems.map((item, index) => (
             <a
               key={index}
@@ -220,7 +222,7 @@ export default function Informes() {
               }`}
             >
               <item.icon size={20} />
-              {sidebarOpen && <span className="text-sm font-medium">{item.label}</span>}
+              <span className="text-sm font-medium">{item.label}</span>
             </a>
           ))}
         </nav>
@@ -231,13 +233,20 @@ export default function Informes() {
             className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-all"
           >
             <LogOut size={20} />
-            {sidebarOpen && <span className="text-sm font-medium">Cerrar Sesión</span>}
+            <span className="text-sm font-medium">Cerrar Sesión</span>
           </button>
         </div>
       </motion.aside>
 
-      <div className="flex-1 flex flex-col">
-        <header className="h-16 bg-slate-950/50 border-b border-green-500/20 flex items-center justify-between px-6">
+      {!sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(true)}
+        />
+      )}
+
+      <div className="flex-1 flex flex-col lg:ml-[260px]">
+        <header className="h-16 bg-slate-950/50 border-b border-green-500/20 flex items-center justify-between px-4 lg:px-6">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -399,14 +408,15 @@ export default function Informes() {
 
               <div className="space-y-2">
                 {powerBiEndpoints.map((ep) => (
-                  <div key={ep.key} className="flex items-center justify-between bg-slate-900/50 rounded-lg p-3">
-                    <div>
+                  <div key={ep.key} className="flex flex-col sm:flex-row sm:items-center justify-between bg-slate-900/50 rounded-lg p-3 gap-2">
+                    <div className="flex-1 min-w-0">
                       <p className="text-white text-sm font-medium">{ep.name}</p>
-                      <p className="text-slate-500 text-xs">{typeof window !== 'undefined' ? window.location.origin : ''}{ep.url}</p>
+                      <p className="text-slate-500 text-xs truncate">{typeof window !== 'undefined' ? window.location.origin : ''}{ep.url}</p>
+                      <p className="text-yellow-400/70 text-xs font-mono mt-1">x-api-key: {powerBiApiKey}</p>
                     </div>
                     <button
-                      onClick={() => copyToClipboard(`${typeof window !== 'undefined' ? window.location.origin : ''}${ep.url}`, ep.key)}
-                      className="p-2 hover:bg-slate-700 rounded-lg transition-colors"
+                      onClick={() => copyToClipboard(`${typeof window !== 'undefined' ? window.location.origin : ''}${ep.url}\n\nHeaders:\nx-api-key: ${powerBiApiKey}`, ep.key)}
+                      className="p-2 hover:bg-slate-700 rounded-lg transition-colors self-end sm:self-center"
                     >
                       {copiedUrl === ep.key ? (
                         <CheckCircle size={18} className="text-green-400" />
@@ -424,9 +434,14 @@ export default function Informes() {
                 </p>
                 <ol className="text-slate-400 text-sm mt-2 list-decimal list-inside space-y-1">
                   <li>Abre Power BI Desktop</li>
-                  <li>Sélectiona "Obtener datos" → "Web"</li>
-                  <li>Copia y pega la URL del endpoint que necesitas</li>
-                  <li>Configura la autenticación (Anónimo)</li>
+                  <li>Selecciona "Obtener datos" → "Web" → "Opciones avanzadas"</li>
+                  <li>Copia y pega la URL del endpoint</li>
+                  <li>En "Encabezados HTTP", agrega:</li>
+                  <ul className="ml-6 list-disc">
+                    <li>Nombre: <code className="bg-slate-800 px-1 rounded">x-api-key</code></li>
+                    <li>Valor: <code className="bg-slate-800 px-1 rounded">{powerBiApiKey}</code></li>
+                  </ul>
+                  <li>Configura la autenticación como "Anónimo"</li>
                   <li>Transforma los datos según sea necesario</li>
                 </ol>
               </div>
