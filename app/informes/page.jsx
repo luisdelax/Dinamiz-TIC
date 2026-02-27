@@ -202,15 +202,15 @@ export default function Informes() {
       <motion.aside
         initial={false}
         animate={{ x: sidebarOpen ? 0 : -260 }}
-        className="bg-slate-950 border-r border-green-500/20 flex flex-col fixed left-0 top-0 h-full z-50 w-[260px]"
+        className="bg-slate-950 border-r border-green-500/20 flex flex-col fixed left-0 top-0 h-screen z-50 w-[260px]"
       >
-        <div className="p-4 border-b border-green-500/20">
+        <div className="p-4 border-b border-green-500/20 flex-shrink-0">
           <h1 className="font-bold text-green-400 text-xl">
             Dinamiz TIC
           </h1>
         </div>
 
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 140px)' }}>
           {menuItems.map((item, index) => (
             <a
               key={index}
