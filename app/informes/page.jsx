@@ -11,6 +11,7 @@ import {
   Calendar, 
   Warehouse,
   FileText,
+  FilePlus,
   Settings,
   LogOut,
   Bell,
@@ -19,6 +20,7 @@ import {
   Monitor,
   HardDrive,
   UserCog,
+  MapPin,
   Download,
   BarChart3,
   PieChart,
@@ -113,6 +115,7 @@ export default function Informes() {
 
   const allMenuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard', roles: ['Administrador', 'Superusuario', 'TecnicoN1'] },
+    { icon: FilePlus, label: 'Formatos', href: '/formatos', roles: ['Administrador', 'Superusuario', 'TecnicoN1'] },
     { icon: Users, label: 'Funcionarios', href: '/funcionarios', roles: ['Administrador', 'Superusuario'] },
     { icon: Computer, label: 'Equipos Computo', href: '/equipos/computo', roles: ['Administrador', 'Superusuario', 'TecnicoN1'] },
     { icon: Wifi, label: 'Telecomunicaciones', href: '/equipos/telecom', roles: ['Administrador', 'Superusuario', 'TecnicoN1'] },
@@ -120,6 +123,7 @@ export default function Informes() {
     { icon: Monitor, label: 'Audiovisuales', href: '/audiovisuales', roles: ['Administrador', 'Superusuario', 'TecnicoN1'] },
     { icon: Ticket, label: 'Tickets', href: '/tickets', roles: ['Administrador', 'Superusuario', 'TecnicoN1'] },
     { icon: CheckSquare, label: 'Tareas', href: '/tareas', roles: ['Administrador', 'Superusuario', 'TecnicoN1'] },
+    { icon: MapPin, label: 'Ubicaciones', href: '/ubicaciones', roles: ['Administrador', 'Superusuario'] },
     { icon: Warehouse, label: 'Préstamos', href: '/prestamos', roles: ['Administrador', 'Superusuario'] },
     { icon: Calendar, label: 'Auditorio', href: '/auditorio', roles: ['Administrador', 'Superusuario'] },
     { icon: UserCog, label: 'Usuarios', href: '/usuarios', roles: ['Administrador'] },
