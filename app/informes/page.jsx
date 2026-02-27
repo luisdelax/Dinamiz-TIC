@@ -127,7 +127,7 @@ export default function Informes() {
     { icon: Settings, label: 'Configuración', href: '/configuracion', roles: ['Administrador', 'Superusuario', 'TecnicoN1'] },
   ]
 
-  const menuItems = allMenuItems.filter(item => user && item.roles.includes(user.rol))
+  const menuItems = allMenuItems.filter(item => user && user.rol && item.roles.includes(user.rol))
 
   const [downloading, setDownloading] = useState(null)
   const [copiedUrl, setCopiedUrl] = useState(null)
