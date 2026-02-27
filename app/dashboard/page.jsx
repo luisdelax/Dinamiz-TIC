@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { 
   LayoutDashboard, 
   MapPin,
@@ -28,7 +27,6 @@ import {
   FilePlus
 } from 'lucide-react'
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
-import OpenCodeChat from '@/components/OpenCodeChat'
 
 export default function Dashboard() {
   const [user, setUser] = useState(null)
@@ -245,22 +243,14 @@ export default function Dashboard() {
       </header>
 
       {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
+      {mobileMenuOpen && (
           <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
               onClick={() => setMobileMenuOpen(false)}
-              className="lg:hidden fixed inset-0 bg-black/60 z-50"
+              className="lg:hidden fixed inset-0 bg-black/60 z-50 animate-fade-in"
             />
-            <motion.div
-              initial={{ x: -280 }}
-              animate={{ x: 0 }}
-              exit={{ x: -280 }}
-              transition={{ type: 'tween', duration: 0.3 }}
-              className="lg:hidden fixed top-0 left-0 bottom-0 w-[280px] bg-slate-950 border-r border-green-500/20 z-50 flex flex-col"
+            <div
+              className="lg:hidden fixed top-0 left-0 bottom-0 w-[280px] bg-slate-950 border-r border-green-500/20 z-50 flex flex-col animate-slide-in"
             >
               <div className="p-4 border-b border-green-500/20 flex items-center justify-between">
                 <h1 className="font-bold text-green-400 text-xl">Dinamiz TIC</h1>
@@ -297,27 +287,19 @@ export default function Dashboard() {
                   <span className="text-sm font-medium">Cerrar Sesión</span>
                 </button>
               </div>
-            </motion.div>
+            </div>
           </>
         )}
-      </AnimatePresence>
 
       {/* Mobile Notifications Dropdown */}
-      <AnimatePresence>
-        {showNotif && (
+      {showNotif && (
           <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
               onClick={() => setShowNotif(false)}
-              className="lg:hidden fixed inset-0 bg-black/40 z-40"
+              className="lg:hidden fixed inset-0 bg-black/40 z-40 animate-fade-in"
             />
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="lg:hidden fixed top-16 right-2 left-2 bg-slate-900 border border-green-500/30 rounded-xl shadow-xl z-50 overflow-hidden max-h-[60vh]"
+            <div
+              className="lg:hidden fixed top-16 right-2 left-2 bg-slate-900 border border-green-500/30 rounded-xl shadow-xl z-50 overflow-hidden max-h-[60vh] animate-slide-down"
             >
               <div className="p-3 border-b border-green-500/20 flex items-center justify-between">
                 <h3 className="text-white font-medium">Notificaciones</h3>
@@ -359,16 +341,13 @@ export default function Dashboard() {
                   </div>
                 )}
               </div>
-            </motion.div>
+            </div>
           </>
         )}
-      </AnimatePresence>
 
       {/* Desktop Sidebar */}
-      <motion.aside
-        initial={false}
-        animate={{ width: sidebarOpen ? 260 : 80 }}
-        className="hidden lg:flex bg-slate-950 border-r border-green-500/20 flex-col fixed h-full z-40"
+      <aside
+        className={`hidden lg:flex bg-slate-950 border-r border-green-500/20 flex-col fixed h-full z-40 transition-all duration-300 ${sidebarOpen ? 'w-[260px]' : 'w-20'}`}
       >
         <div className="p-4 border-b border-green-500/20">
           <h1 className={`font-bold text-green-400 transition-all ${sidebarOpen ? 'text-xl' : 'text-lg text-center'}`}>
@@ -402,7 +381,7 @@ export default function Dashboard() {
             {sidebarOpen && <span className="text-sm font-medium">Cerrar Sesión</span>}
           </button>
         </div>
-      </motion.aside>
+      </aside>
 
       {/* Main Content */}
       <div className="lg:pl-[260px] flex-1 flex flex-col pt-14 lg:pt-0">
@@ -502,14 +481,10 @@ export default function Dashboard() {
         </header>
 
         <main className="flex-1 p-3 md:p-4 lg:p-6 pb-20 lg:pb-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-4 lg:mb-6"
-          >
+          <div className="mb-4 lg:mb-6 animate-fade-in-up">
             <h2 className="text-lg lg:text-2xl font-bold text-white">Bienvenido, {user?.nombre}</h2>
             <p className="text-green-400/70 text-sm">{user?.rol}</p>
-          </motion.div>
+          </div>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4 mb-4 lg:mb-6">
@@ -519,12 +494,10 @@ export default function Dashboard() {
               { label: 'Funcionarios', value: dashboardData?.stats?.funcionarios || 0, icon: Users, color: 'bg-blue-500', href: '/funcionarios' },
               { label: 'Préstamos', value: dashboardData?.stats?.prestamos || 0, icon: Warehouse, color: 'bg-purple-500', href: '/prestamos' },
             ].map((stat, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-slate-800/50 border border-green-500/20 rounded-xl p-3 lg:p-4 hover:border-green-500/40 transition-all cursor-pointer"
+                className="bg-slate-800/50 border border-green-500/20 rounded-xl p-3 lg:p-4 hover:border-green-500/40 transition-all cursor-pointer animate-fade-in-up"
+                style={{ animationDelay: `${index * 0.1}s` }}
                 onClick={() => window.location.href = stat.href}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -534,16 +507,12 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <p className="text-xl lg:text-2xl font-bold text-white">{stat.value}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
 
           {/* Tareas Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-slate-800/50 border border-green-500/20 rounded-xl p-3 lg:p-4 mb-4 lg:mb-6"
-          >
+          <div className="bg-slate-800/50 border border-green-500/20 rounded-xl p-3 lg:p-4 mb-4 lg:mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-purple-500/20 rounded-lg">
@@ -608,16 +577,11 @@ export default function Dashboard() {
                 <p>Sin tareas pendientes</p>
               </div>
             )}
-          </motion.div>
+          </div>
 
           {/* Charts Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-6 mb-4 lg:mb-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="bg-slate-800/50 border border-green-500/20 rounded-xl p-3 lg:p-4"
-            >
+            <div className="bg-slate-800/50 border border-green-500/20 rounded-xl p-3 lg:p-4 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
               <h3 className="text-white font-medium text-sm lg:text-base mb-3">Tickets por Estado</h3>
               <div className="h-40 lg:h-52">
                 <ResponsiveContainer width="100%" height="100%">
@@ -643,14 +607,9 @@ export default function Dashboard() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="bg-slate-800/50 border border-green-500/20 rounded-xl p-3 lg:p-4"
-            >
+            <div className="bg-slate-800/50 border border-green-500/20 rounded-xl p-3 lg:p-4 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
               <h3 className="text-white font-medium text-sm lg:text-base mb-3">Equipos por Tipo</h3>
               <div className="h-40 lg:h-52">
                 <ResponsiveContainer width="100%" height="100%">
@@ -665,14 +624,9 @@ export default function Dashboard() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="bg-slate-800/50 border border-green-500/20 rounded-xl p-3 lg:p-4"
-            >
+            <div className="bg-slate-800/50 border border-green-500/20 rounded-xl p-3 lg:p-4 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
               <h3 className="text-white font-medium text-sm lg:text-base mb-3">Tickets por Mes</h3>
               <div className="h-40 lg:h-52">
                 <ResponsiveContainer width="100%" height="100%">
@@ -687,14 +641,9 @@ export default function Dashboard() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="bg-slate-800/50 border border-green-500/20 rounded-xl p-3 lg:p-4"
-            >
+            <div className="bg-slate-800/50 border border-green-500/20 rounded-xl p-3 lg:p-4 animate-fade-in-up" style={{ animationDelay: '0.7s' }}>
               <h3 className="text-white font-medium text-sm lg:text-base mb-3">Estado de Equipos</h3>
               <div className="h-40 lg:h-52">
                 <ResponsiveContainer width="100%" height="100%">
@@ -720,7 +669,52 @@ export default function Dashboard() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-            </motion.div>
+            </div>
+
+            <div className="bg-slate-800/50 border border-green-500/20 rounded-xl p-3 lg:p-4 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+              <h3 className="text-white font-medium text-sm lg:text-base mb-3">Tareas por Estado</h3>
+              <div className="h-40 lg:h-52">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={dashboardData?.charts?.tareasPorEstado || []}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={30}
+                      outerRadius={50}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {dashboardData?.charts?.tareasPorEstado?.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #22c55e', borderRadius: '8px' }}
+                      itemStyle={{ color: '#fff' }}
+                    />
+                    <Legend wrapperStyle={{ fontSize: '10px' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div className="bg-slate-800/50 border border-green-500/20 rounded-xl p-3 lg:p-4 animate-fade-in-up" style={{ animationDelay: '0.9s' }}>
+              <h3 className="text-white font-medium text-sm lg:text-base mb-3">Tareas por Prioridad</h3>
+              <div className="h-40 lg:h-52">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={dashboardData?.charts?.tareasPorPrioridad || []}>
+                    <XAxis dataKey="prioridad" stroke="#94a3b8" fontSize={10} />
+                    <YAxis stroke="#94a3b8" fontSize={10} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #22c55e', borderRadius: '8px' }}
+                      itemStyle={{ color: '#fff' }}
+                    />
+                    <Bar dataKey="cantidad" fill="#a855f7" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
 
           {/* Secondary Stats */}
@@ -772,11 +766,10 @@ export default function Dashboard() {
         {/* Desktop Footer */}
         <footer className="hidden lg:block py-3 px-6 border-t border-green-500/20 bg-slate-950/30">
           <p className="text-center text-slate-500 text-xs lg:text-sm">
-            © 2024 Dinamiz TIC
+            © 2026 Dinamiz TIC. Derechos reservados a Luis E. De La Cruz F.
           </p>
         </footer>
       </div>
-      <OpenCodeChat />
     </div>
   )
 }

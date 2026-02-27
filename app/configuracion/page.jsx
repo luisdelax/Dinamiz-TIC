@@ -753,7 +753,7 @@ export default function Configuracion() {
         {/* Desktop Footer */}
         <footer className="hidden lg:block py-3 px-6 border-t border-green-500/20 bg-slate-950/30">
           <p className="text-center text-slate-500 text-xs lg:text-sm">
-            © 2024 Dinamiz TIC
+            © 2026 Dinamiz TIC. Derechos reservados a Luis E. De La Cruz F.
           </p>
         </footer>
       </div>

@@ -292,7 +292,7 @@ export default function CRUDBase({ children, title, subtitle }) {
 
         <footer className="hidden lg:block py-4 px-6 border-t border-green-500/20 bg-slate-900/50">
           <p className="text-center text-slate-500 text-sm">
-            © 2024 Dinamiz TIC. Todos los derechos reservados a Luis E De La Cruz Fajardo
+            © 2026 Dinamiz TIC. Derechos reservados a Luis E. De La Cruz F.
           </p>
         </footer>
       </div>
