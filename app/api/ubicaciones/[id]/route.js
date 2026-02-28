@@ -32,6 +32,7 @@ export async function GET(request, { params }) {
 
     return NextResponse.json(ubicacion)
   } catch (error) {
+    console.error('Error:', error)
     return NextResponse.json({ error: 'Error interno' }, { status: 500 })
   }
 }
@@ -56,7 +57,7 @@ export async function PUT(request, { params }) {
         nombre: data.nombre,
         tipo: data.tipo,
         descripcion: data.descripcion || null,
-        activo: data.activo,
+        activo: Boolean(data.activo),
       },
     })
 
@@ -86,6 +87,7 @@ export async function DELETE(request, { params }) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
+    console.error('Error:', error)
     return NextResponse.json({ error: 'Error interno' }, { status: 500 })
   }
 }

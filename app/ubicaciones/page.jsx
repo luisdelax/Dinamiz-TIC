@@ -180,9 +180,9 @@ export default function UbicacionesPage() {
     {
       key: 'activo',
       header: 'Estado',
-      render: (row) => (
-        <span className={`px-2 py-1 rounded text-xs ${row.activo ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-          {row.activo ? 'Activo' : 'Inactivo'}
+      render: (val, row) => (
+        <span className={`px-2 py-1 rounded text-xs ${val ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+          {val ? 'Activo' : 'Inactivo'}
         </span>
       )
     },

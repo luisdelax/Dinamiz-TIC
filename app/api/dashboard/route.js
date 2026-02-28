@@ -40,7 +40,9 @@ export async function GET(request) {
       reservasProximas,
       ticketsPorMes,
       equiposPorTipo,
-      prestamosPorTipo
+      prestamosPorTipo,
+      tareasPorEstado,
+      tareasPorPrioridad
     ] = await Promise.all([
       prisma.equipoComputo.count({ where: { activo: true } }),
       prisma.equipoComputo.count({ where: { activo: true, estado: 'Disponible' } }),
@@ -89,6 +91,18 @@ export async function GET(request) {
             WHEN "perifericoId" IS NOT NULL THEN 'Periferico'
             WHEN "audiovisualId" IS NOT NULL THEN 'Audiovisual'
           END
+      `,
+      prisma.$queryRaw`
+        SELECT estado, COUNT(*) as cantidad
+        FROM "Tarea"
+        WHERE "activo" = true
+        GROUP BY estado
+      `,
+      prisma.$queryRaw`
+        SELECT prioridad, COUNT(*) as cantidad
+        FROM "Tarea"
+        WHERE "activo" = true
+        GROUP BY prioridad
       `
     ])
 
@@ -128,7 +142,16 @@ export async function GET(request) {
         estadoEquipos: [
           { name: 'Disponibles', value: equiposDisponibles, color: '#22c55e' },
           { name: 'Asignados', value: equiposAsignados, color: '#3b82f6' },
-        ]
+        ],
+        tareasPorEstado: tareasPorEstado.map((t) => ({
+          name: t.estado === 'EnProceso' ? 'En Proceso' : t.estado,
+          value: Number(t.cantidad),
+          color: t.estado === 'Pendiente' ? '#eab308' : t.estado === 'EnProceso' ? '#3b82f6' : t.estado === 'Completada' ? '#22c55e' : '#6b7280'
+        })),
+        tareasPorPrioridad: tareasPorPrioridad.map((t) => ({
+          prioridad: t.prioridad,
+          cantidad: Number(t.cantidad)
+        }))
       }
     })
   } catch (error) {

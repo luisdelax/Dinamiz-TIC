@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import { AlertCircle, Eye, EyeOff, Mail, Lock } from 'lucide-react'
 
 export default function Login() {
@@ -66,31 +65,21 @@ export default function Login() {
     <div className="relative flex items-center justify-center min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <div className="absolute inset-0 overflow-hidden">
         {particles.map((p) => (
-          <motion.div
+          <div
             key={p.id}
-            className="absolute w-1 h-1 rounded-full bg-green-400/40"
-            initial={{ x: p.x, y: p.y }}
-            animate={{
-              y: [null, -50, null],
-              x: [null, Math.random() * 30 - 15, null],
-              opacity: [0.3, 0.8, 0.3],
-            }}
-            transition={{
-              duration: 4 + Math.random() * 4,
-              repeat: Infinity,
-              repeatType: 'reverse',
-              ease: 'easeInOut',
-              delay: Math.random() * 2,
+            className="absolute w-1 h-1 rounded-full bg-green-400/40 animate-float"
+            style={{
+              left: p.x,
+              top: p.y,
+              animationDelay: `${Math.random() * 2}s`,
+              animationDuration: `${4 + Math.random() * 4}s`,
             }}
           />
         ))}
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="relative z-10 w-full max-w-md p-6 md:p-8 rounded-2xl glass neon-border shadow-2xl shadow-green-500/20 mx-4"
+      <div
+        className="relative z-10 w-full max-w-md p-6 md:p-8 rounded-2xl glass neon-border shadow-2xl shadow-green-500/20 mx-4 animate-fade-in-up"
       >
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 rounded-2xl bg-green-500/20 border border-green-500/30 flex items-center justify-center">
@@ -146,15 +135,11 @@ export default function Login() {
           </div>
 
           {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`p-4 rounded-lg border ${
-                errorAnimation 
-                  ? 'bg-red-500/20 border-red-500/50 animate-shake' 
-                  : 'bg-red-500/10 border-red-500/30'
-              }`}
-            >
+            <div className={`p-4 rounded-lg border animate-fade-in-up ${
+              errorAnimation 
+                ? 'bg-red-500/20 border-red-500/50 animate-shake' 
+                : 'bg-red-500/10 border-red-500/30'
+            }`}>
               <div className="flex items-center gap-3">
                 <AlertCircle className="text-red-400 flex-shrink-0" size={20} />
                 <div>
@@ -162,15 +147,13 @@ export default function Login() {
                   <p className="text-red-300/70 text-xs">{error}</p>
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
 
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-3 font-semibold text-slate-900 bg-green-400 rounded-lg hover:bg-green-300 transition-colors duration-300 shadow-lg shadow-green-500/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="w-full px-4 py-3 font-semibold text-slate-900 bg-green-400 rounded-lg hover:bg-green-300 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg shadow-green-500/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             {loading ? (
               <div className="flex items-center gap-2">
@@ -181,13 +164,13 @@ export default function Login() {
             ) : (
               'Ingresar al Dashboard'
             )}
-          </motion.button>
+          </button>
         </form>
 
         <p className="mt-6 text-xs text-center text-green-300/50">
           Sistema de Gestión v2.0 | Tecnología de vanguardia
         </p>
-      </motion.div>
+      </div>
     </div>
   )
 }

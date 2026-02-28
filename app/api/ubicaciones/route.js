@@ -14,30 +14,80 @@ async function verifyAuth(request) {
   }
 }
 
-export async function GET(request, { params }) {
-  const { id } = await params
+export async function GET(request) {
   try {
     const user = await verifyAuth(request)
     if (!user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
-    const ubicacion = await prisma.ubicacion.findUnique({
-      where: { id: parseInt(id) },
-    })
+    const { searchParams } = new URL(request.url)
+    const tipo = searchParams.get('tipo')
+    const activo = searchParams.get('activo')
+    const id = searchParams.get('id')
 
-    if (!ubicacion) {
-      return NextResponse.json({ error: 'No encontrado' }, { status: 404 })
+    if (id) {
+      const ubicacion = await prisma.ubicacion.findUnique({
+        where: { id: parseInt(id) },
+      })
+      if (!ubicacion) {
+        return NextResponse.json({ error: 'No encontrado' }, { status: 404 })
+      }
+      return NextResponse.json(ubicacion)
     }
 
-    return NextResponse.json(ubicacion)
+    const where = {}
+    if (tipo) where.tipo = tipo
+    if (activo !== null && activo !== undefined) where.activo = activo === 'true'
+
+    const ubicaciones = await prisma.ubicacion.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return NextResponse.json(ubicaciones)
   } catch (error) {
+    console.error('Error:', error)
     return NextResponse.json({ error: 'Error interno' }, { status: 500 })
   }
 }
 
-export async function PUT(request, { params }) {
-  const { id } = await params
+export async function POST(request) {
+  try {
+    const user = await verifyAuth(request)
+    if (!user) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    if (user.rol !== 'Administrador') {
+      return NextResponse.json({ error: 'Solo administradores pueden crear ubicaciones' }, { status: 403 })
+    }
+
+    const data = await request.json()
+
+    if (!data.nombre || !data.tipo) {
+      return NextResponse.json({ error: 'Nombre y tipo son requeridos' }, { status: 400 })
+    }
+
+    const ubicacion = await prisma.ubicacion.create({
+      data: {
+        nombre: data.nombre,
+        tipo: data.tipo,
+        descripcion: data.descripcion || null,
+        activo: true,
+      },
+    })
+
+    return NextResponse.json(ubicacion)
+  } catch (error) {
+    console.error('Error:', error)
+    return NextResponse.json({ error: 'Error interno' }, { status: 500 })
+  }
+}
+
+export async function PUT(request) {
+  const url = new URL(request.url)
+  const id = url.pathname.split('/').pop()
   try {
     const user = await verifyAuth(request)
     if (!user) {
@@ -67,8 +117,9 @@ export async function PUT(request, { params }) {
   }
 }
 
-export async function DELETE(request, { params }) {
-  const { id } = await params
+export async function DELETE(request) {
+  const url = new URL(request.url)
+  const id = url.pathname.split('/').pop()
   try {
     const user = await verifyAuth(request)
     if (!user || user.rol !== 'Administrador') {
